@@ -7,7 +7,7 @@ import {
 import { requireAdmin } from "@/lib/admin-auth";
 
 type Params = {
-  params: { id: string };
+  params: { id: string } | Promise<{ id: string }>;
 };
 
 export async function GET(request: Request, { params }: Params) {
@@ -16,7 +16,8 @@ export async function GET(request: Request, { params }: Params) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
 
-  const project = await getProjectById(params.id);
+  const { id } = await Promise.resolve(params);
+  const project = await getProjectById(id);
   if (!project) {
     return NextResponse.json({ error: "Project not found." }, { status: 404 });
   }
@@ -31,8 +32,9 @@ export async function PUT(request: Request, { params }: Params) {
   }
 
   try {
+    const { id } = await Promise.resolve(params);
     const payload = await request.json();
-    const project = await updateProject(params.id, payload);
+    const project = await updateProject(id, payload);
 
     if (!project) {
       return NextResponse.json({ error: "Project not found." }, { status: 404 });
@@ -52,7 +54,8 @@ export async function DELETE(request: Request, { params }: Params) {
     return NextResponse.json({ error: auth.message }, { status: auth.status });
   }
 
-  const deleted = await deleteProject(params.id);
+  const { id } = await Promise.resolve(params);
+  const deleted = await deleteProject(id);
   if (!deleted) {
     return NextResponse.json({ error: "Project not found." }, { status: 404 });
   }

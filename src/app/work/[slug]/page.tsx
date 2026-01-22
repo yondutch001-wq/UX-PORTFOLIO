@@ -5,7 +5,7 @@ import { getProjectBySlug, getProjects } from "@/lib/projects";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 };
 
 export const dynamic = "force-dynamic";
@@ -27,7 +27,8 @@ function getCoverStyle(project: Project) {
 }
 
 export default async function WorkDetailPage({ params }: Props) {
-  const project = await getProjectBySlug(params.slug, true);
+  const { slug } = await Promise.resolve(params);
+  const project = await getProjectBySlug(slug, true);
 
   if (!project) return notFound();
 
@@ -42,7 +43,7 @@ export default async function WorkDetailPage({ params }: Props) {
         href="/work"
         className="text-sm font-semibold text-muted transition hover:text-ink"
       >
-        <- Back to Work
+        &larr; Back to Work
       </Link>
 
       <section className="mt-6 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">

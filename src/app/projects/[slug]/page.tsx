@@ -1,9 +1,10 @@
 import { permanentRedirect } from "next/navigation";
 
 type Props = {
-  params: { slug: string };
+  params: { slug: string } | Promise<{ slug: string }>;
 };
 
-export default function ProjectRedirectPage({ params }: Props) {
-  permanentRedirect(`/work/${params.slug}`);
+export default async function ProjectRedirectPage({ params }: Props) {
+  const { slug } = await Promise.resolve(params);
+  permanentRedirect(`/work/${slug}`);
 }
