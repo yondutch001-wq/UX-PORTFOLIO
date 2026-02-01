@@ -43,6 +43,7 @@ export default function ContactPage({ searchParams }: Props) {
             className="mt-6 grid gap-4"
             name="contact"
             method="POST"
+            action="/__forms.html"
             data-netlify="true"
             data-netlify-honeypot="bot-field"
           >
