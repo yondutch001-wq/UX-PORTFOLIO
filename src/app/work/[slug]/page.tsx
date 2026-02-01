@@ -21,7 +21,7 @@ export default async function WorkDetailPage({ params }: Props) {
 
   const clientLabel = project.client ?? project.title;
   const relatedProjects: Project[] = (await getProjects({ publishedOnly: true }))
-    .filter((item) => item.slug !== project.slug)
+    .filter((item: Project) => item.slug !== project.slug)
     .slice(0, 2);
 
   return (
