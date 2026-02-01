@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { trackEngagement } from "@/lib/engagement";
+import type { EngagementEvent } from "@/lib/engagement";
 
 type Props = {
   projectSlug: string;
   projectId?: string | null;
-  eventType?: "view" | "save" | "inquiry" | "click";
+  eventType?: EngagementEvent;
 };
 
 export default function EngagementTracker({

@@ -82,6 +82,15 @@ const FALLBACK_COVER: ProjectCover = {
   foreground: "#ffffff"
 };
 
+function toRows<T>(result: unknown): T[] {
+  if (Array.isArray(result)) return result as T[];
+  if (result && typeof result === "object" && "rows" in result) {
+    const rows = (result as { rows?: T[] }).rows;
+    return Array.isArray(rows) ? rows : [];
+  }
+  return [];
+}
+
 function parseJson<T>(value: unknown, fallback: T): T {
   if (value === null || value === undefined) return fallback;
   if (typeof value === "string") {
@@ -172,12 +181,13 @@ async function ensureUniqueSlug(slug: string, excludeId?: string) {
   let suffix = 1;
 
   while (true) {
-    const rows = excludeId
+    const result = excludeId
       ? await sql(
           "SELECT id FROM projects WHERE slug = $1 AND id <> $2 LIMIT 1",
           [candidate, excludeId]
         )
       : await sql("SELECT id FROM projects WHERE slug = $1 LIMIT 1", [candidate]);
+    const rows = toRows<Record<string, unknown>>(result);
 
     if (rows.length === 0) return candidate;
 
@@ -196,29 +206,32 @@ export async function getProjects(options?: {
   const whereClause = publishedOnly ? "WHERE is_published = true" : "";
   const limitClause = limit ? `LIMIT ${Number(limit)}` : "";
 
-  const rows = await sql(
+  const result = await sql(
     `SELECT * FROM projects ${whereClause} ORDER BY is_featured DESC, sort_order DESC, created_at DESC ${limitClause}`
   );
 
+  const rows = toRows<Record<string, unknown>>(result);
   return rows.map(normalizeRow);
 }
 
 export async function getProjectBySlug(slug: string, publishedOnly = true) {
   const sql = getSql();
-  const rows = publishedOnly
+  const result = publishedOnly
     ? await sql(
         "SELECT * FROM projects WHERE slug = $1 AND is_published = true LIMIT 1",
         [slug]
       )
     : await sql("SELECT * FROM projects WHERE slug = $1 LIMIT 1", [slug]);
 
+  const rows = toRows<Record<string, unknown>>(result);
   if (rows.length === 0) return null;
   return normalizeRow(rows[0]);
 }
 
 export async function getProjectById(id: string) {
   const sql = getSql();
-  const rows = await sql("SELECT * FROM projects WHERE id = $1 LIMIT 1", [id]);
+  const result = await sql("SELECT * FROM projects WHERE id = $1 LIMIT 1", [id]);
+  const rows = toRows<Record<string, unknown>>(result);
   if (rows.length === 0) return null;
   return normalizeRow(rows[0]);
 }
@@ -233,7 +246,7 @@ export async function createProject(input: ProjectInput) {
   const payload = buildPayload(input, slug);
   const sql = getSql();
 
-  const rows = await sql(
+  const result = await sql(
     `INSERT INTO projects (
       slug, title, client, year, category, role, duration, tools, team,
       summary, overview, problem, goals, responsibilities, approach, solution,
@@ -275,6 +288,7 @@ export async function createProject(input: ProjectInput) {
     ]
   );
 
+  const rows = toRows<Record<string, unknown>>(result);
   return normalizeRow(rows[0]);
 }
 
@@ -288,7 +302,7 @@ export async function updateProject(id: string, input: ProjectInput) {
   const payload = buildPayload(input, slug);
   const sql = getSql();
 
-  const rows = await sql(
+  const result = await sql(
     `UPDATE projects SET
       slug = $1,
       title = $2,
@@ -349,14 +363,16 @@ export async function updateProject(id: string, input: ProjectInput) {
     ]
   );
 
+  const rows = toRows<Record<string, unknown>>(result);
   if (rows.length === 0) return null;
   return normalizeRow(rows[0]);
 }
 
 export async function deleteProject(id: string) {
   const sql = getSql();
-  const rows = await sql("DELETE FROM projects WHERE id = $1 RETURNING id", [
+  const result = await sql("DELETE FROM projects WHERE id = $1 RETURNING id", [
     id
   ]);
+  const rows = toRows<Record<string, unknown>>(result);
   return rows.length > 0;
 }

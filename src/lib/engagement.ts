@@ -1,6 +1,6 @@
 "use client";
 
-type EngagementEvent = "view" | "inquiry" | "click";
+export type EngagementEvent = "view" | "inquiry" | "click";
 
 const SESSION_KEY = "ux_portfolio_session";
 
