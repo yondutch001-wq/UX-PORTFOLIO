@@ -1,3 +1,5 @@
+import ContactForm from "@/components/forms/contact-form";
+
 type Props = {
   searchParams?: { project?: string };
 };
@@ -37,91 +39,7 @@ export default function ContactPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <div className="card p-8">
-          <p className="eyebrow">Project Inquiry</p>
-          <form
-            className="mt-6 grid gap-4"
-            name="contact"
-            method="POST"
-            action="/contact/thanks"
-            data-netlify="true"
-            data-netlify-honeypot="bot-field"
-          >
-            <input type="hidden" name="form-name" value="contact" />
-            <p className="hidden">
-              <label>
-                Don’t fill this out: <input name="bot-field" />
-              </label>
-            </p>
-            <div className="grid gap-2">
-              <label
-                htmlFor="name"
-                className="text-xs uppercase tracking-[0.2em] text-muted"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Your name"
-                className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <label
-                htmlFor="email"
-                className="text-xs uppercase tracking-[0.2em] text-muted"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="you@company.com"
-                className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <label
-                htmlFor="project"
-                className="text-xs uppercase tracking-[0.2em] text-muted"
-              >
-                Project Type
-              </label>
-              <input
-                id="project"
-                name="project"
-                type="text"
-                defaultValue={projectValue}
-                placeholder="Mobile app, SaaS, redesign"
-                className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label
-                htmlFor="message"
-                className="text-xs uppercase tracking-[0.2em] text-muted"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                placeholder="Tell me about your goals, timelines, and challenges."
-                className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
-                required
-              />
-            </div>
-            <button type="submit" className="btn btn-primary w-full">
-              Send Inquiry
-            </button>
-          </form>
-        </div>
+        <ContactForm projectValue={projectValue} />
       </section>
     </main>
   );
