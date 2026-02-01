@@ -21,7 +21,12 @@ export default function EngagementTracker({
     if (!projectSlug || sentRef.current) return;
     sentRef.current = true;
 
-    trackEngagement({ projectSlug, projectId, eventType });
+    const safeEvent: EngagementEvent =
+      eventType === "view" || eventType === "inquiry" || eventType === "click"
+        ? eventType
+        : "view";
+
+    trackEngagement({ projectSlug, projectId, eventType: safeEvent });
   }, [eventType, projectId, projectSlug]);
 
   return null;
