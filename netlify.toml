@@ -1,2 +1,8 @@
 [build.environment]
   NODE_VERSION = "20.9.0"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
