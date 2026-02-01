@@ -9,12 +9,14 @@
     <form
       name="contact"
       method="POST"
+      action="/contact/thanks"
       data-netlify="true"
+      netlify
       data-netlify-honeypot="bot-field"
     >
       <input type="hidden" name="form-name" value="contact" />
       <p style="display: none;">
-        <label>Dont fill this out: <input name="bot-field" /></label>
+        <label>Don't fill this out: <input name="bot-field" /></label>
       </p>
       <input type="text" name="name" />
       <input type="email" name="email" />
