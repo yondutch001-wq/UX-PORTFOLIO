@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import type { Project } from "@/lib/projects";
+import EngagementTracker from "@/components/analytics/engagement-tracker";
+import CaseStudyActions from "@/components/work/case-study-actions";
+import CoverImage from "@/components/work/cover-image";
 import { getProjectBySlug, getProjects } from "@/lib/projects";
 import { notFound } from "next/navigation";
 
@@ -9,22 +11,6 @@ type Props = {
 };
 
 export const dynamic = "force-dynamic";
-
-function getCoverStyle(project: Project) {
-  if (project.coverImageUrl) {
-    return {
-      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.8)), url(${project.coverImageUrl})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      color: project.cover.foreground
-    };
-  }
-
-  return {
-    background: project.cover.background,
-    color: project.cover.foreground
-  };
-}
 
 export default async function WorkDetailPage({ params }: Props) {
   const { slug } = await Promise.resolve(params);
@@ -39,6 +25,7 @@ export default async function WorkDetailPage({ params }: Props) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pb-24 pt-12">
+      <EngagementTracker projectSlug={project.slug} projectId={project.id} />
       <Link
         href="/work"
         className="text-sm font-semibold text-muted transition hover:text-ink"
@@ -70,22 +57,21 @@ export default async function WorkDetailPage({ params }: Props) {
               </div>
             ))}
           </div>
+          <div className="mt-6">
+            <CaseStudyActions projectSlug={project.slug} projectId={project.id} />
+          </div>
         </div>
 
         <div className="card overflow-hidden">
-          <div className="p-6 text-white" style={getCoverStyle(project)}>
-            <p className="text-xs uppercase tracking-[0.2em] text-white/70">
+          <CoverImage project={project} className="aspect-[16/9]" />
+          <div className="p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">
               Case Study
             </p>
             <h2 className="mt-3 text-2xl font-semibold">{clientLabel}</h2>
-            <p className="mt-2 text-sm text-white/80">
-              {project.summary ?? project.overview}
-            </p>
-            <p className="mt-4 text-xs uppercase tracking-[0.2em] text-white/70">
+            <p className="mt-4 text-xs uppercase tracking-[0.2em] text-muted">
               {project.year}
             </p>
-          </div>
-          <div className="p-6">
             <p className="text-xs uppercase tracking-[0.2em] text-muted">
               Project Snapshot
             </p>
@@ -253,21 +239,30 @@ export default async function WorkDetailPage({ params }: Props) {
                 href={`/work/${item.slug}`}
                 className="card group flex h-full flex-col overflow-hidden transition hover:-translate-y-1"
               >
-                <div className="p-6 text-white" style={getCoverStyle(item)}>
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                    {item.category}
+                <CoverImage project={item} className="aspect-[16/9]" />
+                <div className="flex h-full flex-col gap-3 p-5">
+                  <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                    {item.category ?? "Case Study"}
                   </p>
-                  <h3 className="mt-3 text-2xl font-semibold">{item.title}</h3>
-                  <p className="mt-2 text-sm text-white/80">
-                    {item.summary ?? item.overview}
-                  </p>
-                </div>
-                <div className="flex h-full flex-col gap-4 p-6">
+                  <h3 className="text-2xl font-semibold">{item.title}</h3>
                   <div className="flex items-center justify-between text-xs text-muted">
-                    <span>{item.role}</span>
+                    <span>{item.team}</span>
                     <span>{item.duration}</span>
                   </div>
-                  <p className="text-sm text-muted">{item.overview}</p>
+                  {item.summary ? (
+                    <p className="text-sm text-muted line-clamp-3">
+                      {item.summary}
+                    </p>
+                  ) : null}
+                  {item.tools.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {item.tools.map((tool) => (
+                        <span key={tool} className="pill">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
                   <div className="mt-auto flex items-center gap-2 text-sm font-semibold text-ink">
                     View case study
                     <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-1" />

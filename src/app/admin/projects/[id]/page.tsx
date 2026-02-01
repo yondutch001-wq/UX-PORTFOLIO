@@ -1,43 +1,51 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProjectForm from "@/components/admin/project-form";
 import { useAdminSession } from "@/components/admin/use-admin-session";
 import type { Project } from "@/lib/projects";
 
-type Props = {
-  params: { id: string };
-};
-
-export default function EditProjectPage({ params }: Props) {
+export default function EditProjectPage() {
+  const params = useParams<{ id: string }>();
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
   const { session, loading } = useAdminSession();
   const [project, setProject] = useState<Project | null>(null);
   const [status, setStatus] = useState<string | null>("Loading project...");
 
   useEffect(() => {
     if (!session) return;
+    if (!id) return;
 
     const loadProject = async () => {
-      const response = await fetch(`/api/admin/projects/${params.id}`, {
+      const response = await fetch(`/api/admin/projects/${id}`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`
         }
       });
 
-      const result = await response.json();
+      const text = await response.text();
+      let result: { error?: string; project?: Project } = {};
+      if (text) {
+        try {
+          result = JSON.parse(text) as { error?: string; project?: Project };
+        } catch {
+          result = {};
+        }
+      }
 
       if (!response.ok) {
         setStatus(result?.error ?? "Failed to load project.");
         return;
       }
 
-      setProject(result.project);
+      setProject(result.project ?? null);
       setStatus(null);
     };
 
     loadProject();
-  }, [params.id, session]);
+  }, [id, session]);
 
   if (loading) {
     return (

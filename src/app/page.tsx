@@ -2,24 +2,9 @@ import Link from "next/link";
 import { ArrowUpRight, Compass, Gauge, LayoutGrid } from "lucide-react";
 import type { Project } from "@/lib/projects";
 import { getProjects } from "@/lib/projects";
+import CoverImage from "@/components/work/cover-image";
 
 export const dynamic = "force-dynamic";
-
-function getCoverStyle(project: Project) {
-  if (project.coverImageUrl) {
-    return {
-      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.8)), url(${project.coverImageUrl})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      color: project.cover.foreground
-    };
-  }
-
-  return {
-    background: project.cover.background,
-    color: project.cover.foreground
-  };
-}
 
 const services = [
   {
@@ -60,6 +45,27 @@ const processSteps = [
     title: "Deliver",
     description:
       "Ship production-ready design assets and documentation for build."
+  }
+];
+
+const testimonials = [
+  {
+    quote:
+      "DVTCH turned a messy onboarding flow into a clear, confident experience that lifted activation in the first week.",
+    name: "Ariana Patel",
+    title: "Head of Product, Finwell"
+  },
+  {
+    quote:
+      "Fast, thoughtful, and deeply collaborative. The new design system cut our build time by nearly half.",
+    name: "Marcus Reed",
+    title: "Design Lead, Northbyte"
+  },
+  {
+    quote:
+      "We finally have a case-study-ready product story that matches the quality of our engineering.",
+    name: "Jen Alvarez",
+    title: "Founder, RelayOps"
   }
 ];
 
@@ -131,34 +137,85 @@ export default async function Home() {
         <div className="card overflow-hidden animate-fade-in">
           {heroProject ? (
             <>
-              <div className="p-6 text-white" style={getCoverStyle(heroProject)}>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                  Featured Case Study
+              <CoverImage project={heroProject} className="aspect-[16/9]" />
+              <div className="p-5">
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                  Case Study
                 </p>
-                <h2 className="mt-3 text-2xl font-semibold">
+                <h2 className="mt-2 text-xl font-semibold">
                   {heroProject.title}
                 </h2>
-                <p className="mt-2 text-sm text-white/80">
+                {heroProject.year ? (
+                  <p className="mt-1 text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                    {heroProject.year}
+                  </p>
+                ) : null}
+                <p className="mt-2 text-sm text-muted line-clamp-2">
                   {heroProject.summary ?? heroProject.overview}
                 </p>
-                {heroMeta ? (
-                  <p className="mt-4 text-xs text-white/70">{heroMeta}</p>
-                ) : null}
-              </div>
-              <div className="p-6">
-                <p className="text-sm text-muted">{heroProject.overview}</p>
-                <ul className="mt-4 space-y-2 text-sm text-muted">
-                  {heroProject.highlights.slice(0, 2).map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
-                  ))}
-                </ul>
-                <Link
-                  href={`/work/${heroProject.slug}`}
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-ink transition hover:text-accent"
-                >
-                  Read case study
+                <div className="mt-4">
+                  <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                    Project Snapshot
+                  </p>
+                  <div className="mt-3 grid gap-3 text-xs text-muted">
+                    {heroProject.role ? (
+                      <div>
+                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                          Role
+                        </p>
+                        <p className="mt-1 text-ink">{heroProject.role}</p>
+                      </div>
+                    ) : null}
+                    {heroProject.team ? (
+                      <div>
+                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                          Team
+                        </p>
+                        <p className="mt-1 text-ink">{heroProject.team}</p>
+                      </div>
+                    ) : null}
+                    {heroProject.duration ? (
+                      <div>
+                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                          Duration
+                        </p>
+                        <p className="mt-1 text-ink">{heroProject.duration}</p>
+                      </div>
+                    ) : null}
+                    {heroProject.tools.length > 0 ? (
+                      <div>
+                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                          Tools
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {heroProject.tools.map((tool) => (
+                            <span key={tool} className="pill">
+                              {tool}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                    {heroProject.tags.length > 0 ? (
+                      <div>
+                        <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                          Tags
+                        </p>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {heroProject.tags.map((tag) => (
+                            <span key={tag} className="pill">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-2 text-sm font-semibold text-ink">
+                  View case study
                   <ArrowUpRight className="h-4 w-4" />
-                </Link>
+                </div>
               </div>
             </>
           ) : (
@@ -221,34 +278,85 @@ export default async function Home() {
         </div>
 
         {projects.length > 0 ? (
-          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featuredProjects.map((project) => (
               <Link
                 key={project.slug}
                 href={`/work/${project.slug}`}
                 className="card group flex h-full flex-col overflow-hidden transition hover:-translate-y-1"
               >
-                <div className="p-5 text-white" style={getCoverStyle(project)}>
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                    {project.category}
+                <CoverImage project={project} className="aspect-[16/10]" />
+                <div className="flex h-full flex-col gap-3 p-4">
+                  <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                    Case Study
                   </p>
-                  <h3 className="mt-3 text-xl font-semibold">{project.title}</h3>
-                  <p className="mt-2 text-sm text-white/80">
+                  <h3 className="text-lg font-semibold">{project.title}</h3>
+                  {project.year ? (
+                    <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                      {project.year}
+                    </p>
+                  ) : null}
+                  <p className="text-sm text-muted line-clamp-2">
                     {project.summary ?? project.overview}
                   </p>
-                </div>
-                <div className="flex h-full flex-col gap-4 p-5">
-                  <div className="flex items-center justify-between text-xs text-muted">
-                    <span>{project.role}</span>
-                    <span>{project.duration}</span>
-                  </div>
-                  <p className="text-sm text-muted">{project.overview}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
-                      <span key={tag} className="pill">
-                        {tag}
-                      </span>
-                    ))}
+                  <div>
+                    <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                      Project Snapshot
+                    </p>
+                    <div className="mt-2 grid gap-2 text-xs text-muted">
+                      {project.role ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Role
+                          </p>
+                          <p className="mt-1 text-ink">{project.role}</p>
+                        </div>
+                      ) : null}
+                      {project.team ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Team
+                          </p>
+                          <p className="mt-1 text-ink">{project.team}</p>
+                        </div>
+                      ) : null}
+                      {project.duration ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Duration
+                          </p>
+                          <p className="mt-1 text-ink">{project.duration}</p>
+                        </div>
+                      ) : null}
+                      {project.tools.length > 0 ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Tools
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {project.tools.map((tool) => (
+                              <span key={tool} className="pill">
+                                {tool}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {project.tags.length > 0 ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Tags
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {project.tags.map((tag) => (
+                              <span key={tag} className="pill">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="mt-auto flex items-center gap-2 text-sm font-semibold text-ink">
                     View case study
@@ -355,6 +463,35 @@ export default async function Home() {
             <li>Production-ready UI with consistent components.</li>
             <li>Collaboration across product, design, and engineering.</li>
           </ul>
+        </div>
+      </section>
+
+      <section id="testimonials" className="section-anchor mt-20">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="eyebrow">Testimonials</p>
+            <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
+              Teams trust the process and the outcomes.
+            </h2>
+            <p className="mt-4 max-w-2xl text-muted">
+              Real feedback from product leaders and founders after shipping
+              complex work together.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {testimonials.map((testimonial) => (
+            <div key={testimonial.name} className="card p-6">
+              <p className="text-sm text-muted">"{testimonial.quote}"</p>
+              <div className="mt-6">
+                <p className="text-sm font-semibold">{testimonial.name}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                  {testimonial.title}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

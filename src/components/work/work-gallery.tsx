@@ -6,28 +6,13 @@ import clsx from "clsx";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, LayoutGrid, LayoutList, Search } from "lucide-react";
 import type { Project } from "@/lib/projects";
+import CoverImage from "@/components/work/cover-image";
 
 type ViewMode = "grid" | "list";
 
 type Props = {
   projects: Project[];
 };
-
-function getCoverStyle(project: Project) {
-  if (project.coverImageUrl) {
-    return {
-      backgroundImage: `linear-gradient(180deg, rgba(15, 23, 42, 0.25), rgba(15, 23, 42, 0.8)), url(${project.coverImageUrl})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      color: project.cover.foreground
-    };
-  }
-
-  return {
-    background: project.cover.background,
-    color: project.cover.foreground
-  };
-}
 
 function matchesQuery(project: Project, query: string) {
   if (!query) return true;
@@ -253,46 +238,90 @@ export default function WorkGallery({ projects }: Props) {
             href={`/work/${featuredProject.slug}`}
             className="card group mt-4 flex flex-col overflow-hidden transition hover:-translate-y-1 focus-ring"
           >
-            <div className="p-8 text-white" style={getCoverStyle(featuredProject)}>
-              <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                {featuredProject.category}
+            <CoverImage project={featuredProject} className="aspect-[16/9]" />
+            <div className="flex flex-1 flex-col gap-3 p-5">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                Case Study
               </p>
-              <h2 className="mt-3 text-3xl font-semibold">
+              <h2 className="text-3xl font-semibold">
                 {featuredProject.title}
               </h2>
-              <p className="mt-2 max-w-2xl text-sm text-white/80">
-                {featuredProject.summary ?? featuredProject.overview}
-              </p>
-            {[
-              featuredProject.client,
-              featuredProject.year,
-              featuredProject.duration
-            ]
-              .filter(Boolean)
-              .join(" / ") ? (
-              <p className="mt-4 text-xs text-white/70">
-                {[
-                  featuredProject.client,
-                  featuredProject.year,
-                  featuredProject.duration
-                ]
-                  .filter(Boolean)
-                  .join(" / ")}
-              </p>
-            ) : null}
-            </div>
-            <div className="flex flex-1 flex-col gap-4 p-6">
-              <div className="flex items-center justify-between text-xs text-muted">
-                <span>{featuredProject.role}</span>
-                <span>{featuredProject.team}</span>
-              </div>
-              <p className="text-sm text-muted">{featuredProject.overview}</p>
-              <div className="flex flex-wrap gap-2">
-                {featuredProject.tags.map((tag) => (
-                  <span key={tag} className="pill">
-                    {tag}
-                  </span>
-                ))}
+              {featuredProject.year ? (
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                  {featuredProject.year}
+                </p>
+              ) : null}
+              {featuredProject.summary ? (
+                <p className="text-sm text-muted line-clamp-4">
+                  {featuredProject.summary}
+                </p>
+              ) : null}
+              <div>
+                <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                  Project Snapshot
+                </p>
+                <div className="mt-3 grid gap-3 text-xs text-muted">
+                  {featuredProject.role ? (
+                    <div>
+                      <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                        Role
+                      </p>
+                      <p className="mt-1 text-ink">{featuredProject.role}</p>
+                    </div>
+                  ) : null}
+                  {featuredProject.team || featuredProject.duration ? (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {featuredProject.team ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Team
+                          </p>
+                          <p className="mt-1 text-ink">{featuredProject.team}</p>
+                        </div>
+                      ) : null}
+                      {featuredProject.duration ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Duration
+                          </p>
+                          <p className="mt-1 text-ink">{featuredProject.duration}</p>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {featuredProject.tools.length > 0 || featuredProject.tags.length > 0 ? (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {featuredProject.tools.length > 0 ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Tools
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {featuredProject.tools.map((tool) => (
+                              <span key={`tool-${tool}`} className="pill">
+                                {tool}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                      {featuredProject.tags.length > 0 ? (
+                        <div>
+                          <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                            Tags
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {featuredProject.tags.map((tag) => (
+                              <span key={`tag-${tag}`} className="pill">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-ink">
                 View case study
@@ -352,35 +381,71 @@ export default function WorkGallery({ projects }: Props) {
                       viewMode === "list" && "lg:flex-row"
                     )}
                   >
-                    <div
+                    <CoverImage
+                      project={project}
                       className={clsx(
-                        "p-6 text-white",
-                        viewMode === "list" ? "lg:w-[45%]" : ""
+                        "min-h-[220px] w-full",
+                        viewMode === "list" ? "lg:min-h-full lg:w-[45%]" : ""
                       )}
-                      style={getCoverStyle(project)}
-                    >
-                      <p className="text-xs uppercase tracking-[0.2em] text-white/70">
-                        {project.category}
+                    />
+                    <div className="flex h-full flex-1 flex-col gap-4 p-6">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                        Case Study
                       </p>
-                      <h3 className="mt-3 text-2xl font-semibold">
+                      <h3 className="text-2xl font-semibold">
                         {project.title}
                       </h3>
-                      <p className="mt-2 text-sm text-white/80">
-                        {project.summary ?? project.overview}
-                      </p>
-                    </div>
-                    <div className="flex h-full flex-1 flex-col gap-4 p-6">
-                      <div className="flex items-center justify-between text-xs text-muted">
-                        <span>{project.role}</span>
-                        <span>{project.duration}</span>
-                      </div>
-                      <p className="text-sm text-muted">{project.overview}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {project.tags.map((tag) => (
-                          <span key={tag} className="pill">
-                            {tag}
-                          </span>
-                        ))}
+                      {project.year ? (
+                        <p className="text-xs uppercase tracking-[0.2em] text-muted">
+                          {project.year}
+                        </p>
+                      ) : null}
+                      {project.summary ? null : null}
+                      <div className="grid gap-3 text-xs text-muted">
+                        {project.role ? (
+                          <div>
+                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                              Role
+                            </p>
+                            <p className="mt-1 text-ink">{project.role}</p>
+                          </div>
+                        ) : null}
+                        {project.duration ? (
+                          <div>
+                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                              Duration
+                            </p>
+                            <p className="mt-1 text-ink">{project.duration}</p>
+                          </div>
+                        ) : null}
+                        {project.tools.length > 0 ? (
+                          <div>
+                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                              Tools
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {project.tools.map((tool) => (
+                                <span key={tool} className="pill">
+                                  {tool}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
+                        {project.tags.length > 0 ? (
+                          <div>
+                            <p className="text-[0.6rem] uppercase tracking-[0.2em] text-muted">
+                              Tags
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {project.tags.map((tag) => (
+                                <span key={tag} className="pill">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ) : null}
                       </div>
                       <div className="mt-auto flex items-center gap-2 text-sm font-semibold text-ink">
                         View case study

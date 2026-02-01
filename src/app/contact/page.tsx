@@ -1,4 +1,10 @@
-export default function ContactPage() {
+type Props = {
+  searchParams?: { project?: string };
+};
+
+export default function ContactPage({ searchParams }: Props) {
+  const projectValue = searchParams?.project ?? "";
+
   return (
     <main className="mx-auto max-w-6xl px-6 pb-24 pt-12">
       <section className="grid gap-12 lg:grid-cols-[1fr_1fr]">
@@ -16,10 +22,10 @@ export default function ContactPage() {
             <div className="card p-6">
               <p className="text-xs uppercase tracking-[0.2em] text-muted">Email</p>
               <a
-                href="mailto:hello@dvtch.studio"
+                href="mailto:dvtchii@gmail.com"
                 className="mt-2 inline-block text-lg font-semibold text-ink"
               >
-                hello@dvtch.studio
+                dvtchii@gmail.com
               </a>
             </div>
             <div className="card p-6">
@@ -35,10 +41,17 @@ export default function ContactPage() {
           <p className="eyebrow">Project Inquiry</p>
           <form
             className="mt-6 grid gap-4"
-            action="mailto:hello@dvtch.studio"
-            method="post"
-            encType="text/plain"
+            name="contact"
+            method="POST"
+            data-netlify="true"
+            data-netlify-honeypot="bot-field"
           >
+            <input type="hidden" name="form-name" value="contact" />
+            <p className="hidden">
+              <label>
+                Don’t fill this out: <input name="bot-field" />
+              </label>
+            </p>
             <div className="grid gap-2">
               <label
                 htmlFor="name"
@@ -52,6 +65,7 @@ export default function ContactPage() {
                 type="text"
                 placeholder="Your name"
                 className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -67,6 +81,7 @@ export default function ContactPage() {
                 type="email"
                 placeholder="you@company.com"
                 className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -80,6 +95,7 @@ export default function ContactPage() {
                 id="project"
                 name="project"
                 type="text"
+                defaultValue={projectValue}
                 placeholder="Mobile app, SaaS, redesign"
                 className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
               />
@@ -97,6 +113,7 @@ export default function ContactPage() {
                 rows={5}
                 placeholder="Tell me about your goals, timelines, and challenges."
                 className="rounded-2xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-ink"
+                required
               />
             </div>
             <button type="submit" className="btn btn-primary w-full">
