@@ -4,6 +4,7 @@ import EngagementTracker from "@/components/analytics/engagement-tracker";
 import CaseStudyActions from "@/components/work/case-study-actions";
 import CoverImage from "@/components/work/cover-image";
 import { getProjectBySlug, getProjects } from "@/lib/projects";
+import type { Project } from "@/lib/projects";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -19,7 +20,7 @@ export default async function WorkDetailPage({ params }: Props) {
   if (!project) return notFound();
 
   const clientLabel = project.client ?? project.title;
-  const relatedProjects = (await getProjects({ publishedOnly: true }))
+  const relatedProjects: Project[] = (await getProjects({ publishedOnly: true }))
     .filter((item) => item.slug !== project.slug)
     .slice(0, 2);
 
