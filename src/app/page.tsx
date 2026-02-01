@@ -70,7 +70,7 @@ const testimonials = [
 ];
 
 export default async function Home() {
-  const projects = await getProjects({ publishedOnly: true });
+  const projects: Project[] = await getProjects({ publishedOnly: true });
   const featuredProjects = projects.slice(0, 3);
   const heroProject =
     projects.find((project) => project.isFeatured) ?? projects[0];
